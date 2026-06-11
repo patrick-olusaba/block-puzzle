@@ -1,0 +1,121 @@
+.scoreboard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  position: relative;
+  flex-wrap: wrap;
+  min-height: 36px;
+}
+
+.score-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #1a1a2e;
+  border: 2px solid #2a2a4a;
+  border-radius: 14px;
+  padding: 10px 22px;
+  min-width: 100px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.score-block.current {
+  border-color: #3a2a0a;
+  box-shadow: 0 2px 16px rgba(251, 191, 36, 0.15);
+}
+
+.score-block.best {
+  border-color: #1a2a4a;
+  box-shadow: 0 2px 16px rgba(96, 165, 250, 0.1);
+}
+
+.score-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #8888bb;
+  margin-bottom: 2px;
+}
+
+.score-value {
+  font-size: 26px;
+  font-weight: 800;
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.score-block.current .score-value {
+  color: #fbbf24;
+  text-shadow: 0 0 12px rgba(251, 191, 36, 0.3);
+}
+
+.score-block.best .score-value {
+  color: #60a5fa;
+  text-shadow: 0 0 12px rgba(96, 165, 250, 0.3);
+}
+
+/* Score pop animation */
+.score-pop {
+  animation: scorePop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes scorePop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
+.combo-badge {
+  background: linear-gradient(135deg, #f97316, #ef4444);
+  color: white;
+  font-size: 14px;
+  font-weight: 800;
+  padding: 7px 16px;
+  border-radius: 20px;
+  letter-spacing: 1px;
+  animation: comboPopIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow:
+    0 0 20px rgba(249, 115, 22, 0.5),
+    0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes comboPopIn {
+  0%   { transform: scale(0.3) rotate(-10deg); opacity: 0; }
+  50%  { transform: scale(1.2) rotate(3deg); }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+.lines-badge {
+  background: linear-gradient(135deg, #a855f7, #3b82f6);
+  color: white;
+  font-size: 14px;
+  font-weight: 800;
+  padding: 7px 16px;
+  border-radius: 20px;
+  letter-spacing: 1px;
+  animation: linesPopIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow:
+    0 0 20px rgba(168, 85, 247, 0.5),
+    0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes linesPopIn {
+  0%   { transform: scale(0.3) translateY(-10px); opacity: 0; }
+  60%  { transform: scale(1.15) translateY(2px); }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+@media (max-width: 480px) {
+  .score-block {
+    padding: 8px 14px;
+    min-width: 80px;
+  }
+
+  .score-value {
+    font-size: 22px;
+  }
+}
