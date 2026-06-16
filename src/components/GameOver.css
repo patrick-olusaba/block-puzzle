@@ -114,3 +114,82 @@
 .restart-btn:active {
   transform: translateY(0);
 }
+
+/* Stats */
+.gameover-stats {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+.go-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.go-stat-val {
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+}
+.go-stat-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #888;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* Share button */
+.share-btn {
+  background: transparent;
+  border: 1px solid #3a3a6a;
+  color: #aaa;
+  border-radius: 12px;
+  padding: 10px 30px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  width: 100%;
+}
+.share-btn:hover {
+  border-color: #7c3aed;
+  color: #fff;
+  background: rgba(124,58,237,0.1);
+}
+
+/* Menu button */
+.menu-btn {
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.15s;
+}
+.menu-btn:hover { color: #aaa; }
+
+/* Confetti */
+.confetti-piece {
+  position: fixed;
+  top: -20px;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 200;
+  animation: confettiFall 2.5s ease-in forwards;
+}
+
+@keyframes confettiFall {
+  0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(105vh) rotate(720deg); opacity: 0; }
+}
+
+/* Compact card when has stats */
+@media (max-height: 700px) {
+  .gameover-card { padding: 24px 36px; gap: 10px; }
+  .gameover-title { font-size: 28px; }
+  .gameover-icon { font-size: 40px; }
+}

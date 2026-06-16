@@ -10,6 +10,7 @@ interface PieceTrayProps {
   onDragEnd: () => void;
   draggingIndex: number | null;
   onTouchStart: (e: React.TouchEvent, index: number) => void;
+  onRotate: (index: number) => void;
 }
 
 export const PiecePreview: React.FC<{ piece: BlockShape }> = ({ piece }) => {
@@ -31,7 +32,9 @@ export const PiecePreview: React.FC<{ piece: BlockShape }> = ({ piece }) => {
           <div
             key={`${r}-${c}`}
             className={`piece-cell ${filled ? `filled color-${piece.color}` : 'ghost'}`}
-          />
+          >
+            {filled && <span className="piece-cell-shine" />}
+          </div>
         ))
       )}
     </div>
@@ -44,6 +47,7 @@ const PieceTray: React.FC<PieceTrayProps> = ({
   onDragEnd,
   draggingIndex,
   onTouchStart,
+  onRotate,
 }) => {
   return (
     <div className="piece-tray">
@@ -56,7 +60,19 @@ const PieceTray: React.FC<PieceTrayProps> = ({
           onDragEnd={onDragEnd}
           onTouchStart={piece ? (e) => onTouchStart(e, i) : undefined}
         >
-          {piece ? <PiecePreview piece={piece} /> : null}
+          {piece ? (
+            <>
+              <PiecePreview piece={piece} />
+              <button
+                className="rotate-btn"
+                onClick={(e) => { e.stopPropagation(); onRotate(i); }}
+                aria-label="Rotate piece"
+                title="Rotate"
+              >
+                ↻
+              </button>
+            </>
+          ) : null}
         </div>
       ))}
     </div>

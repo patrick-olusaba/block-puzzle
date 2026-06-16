@@ -191,3 +191,107 @@ body {
     background-size: 150px 150px;
   }
 }
+
+/* ── Start Menu ────────────────────────────── */
+
+.menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 8, 24, 0.92);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  animation: menuFadeIn 0.5s ease;
+}
+
+@keyframes menuFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.menu-card {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 40px;
+  animation: menuCardIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes menuCardIn {
+  from { transform: scale(0.8) translateY(20px); opacity: 0; }
+  to   { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.menu-title {
+  font-size: 48px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  display: flex;
+  gap: 12px;
+}
+
+@media (max-width: 480px) {
+  .menu-title { font-size: 34px; gap: 8px; }
+}
+
+.menu-sub {
+  font-size: 14px;
+  color: #6666aa;
+  letter-spacing: 0.5px;
+  max-width: 260px;
+  line-height: 1.5;
+}
+
+.menu-stats-row {
+  display: flex;
+  gap: 32px;
+}
+
+.menu-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.menu-stat-val {
+  font-size: 24px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.menu-stat-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #666;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.play-btn {
+  background: linear-gradient(135deg, #7c3aed, #3b82f6);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  padding: 16px 56px;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 30px rgba(124, 58, 237, 0.5);
+  margin-top: 8px;
+}
+
+.play-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 40px rgba(124, 58, 237, 0.7);
+}
+
+.play-btn:active {
+  transform: translateY(0);
+}

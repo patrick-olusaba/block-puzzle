@@ -159,6 +159,18 @@ export function hasAnyValidMove(grid: Grid, pieces: (BlockShape | null)[]): bool
   return false;
 }
 
+export function rotateShape(shape: boolean[][]): boolean[][] {
+  const rows = shape.length;
+  const cols = shape[0].length;
+  const rotated: boolean[][] = Array.from({ length: cols }, () => Array(rows).fill(false));
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      rotated[c][rows - 1 - r] = shape[r][c];
+    }
+  }
+  return rotated;
+}
+
 export function getPreviewCells(shape: boolean[][], row: number, col: number): [number, number][] {
   const cells: [number, number][] = [];
   for (let r = 0; r < shape.length; r++) {

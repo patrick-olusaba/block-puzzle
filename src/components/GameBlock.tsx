@@ -8,17 +8,20 @@ import {
   clearLines,
   calcScore,
   hasAnyValidMove,
+  rotateShape,
 } from '../gameLogic';
 import GridComponent from './Grid';
 import PieceTray from './PieceTray';
 import ScoreBoard from './ScoreBoard';
 import GameOver from './GameOver';
+import { unlockAudio, sfxPlace, sfxClear, sfxCombo, sfxGameOver, sfxNewBest } from '../sounds';
 import '../App.css';
 
 // ─── Reducer ───────────────────────────────────────────────
 
 type Action =
   | { type: 'PLACE_PIECE'; pieceIndex: number; row: number; col: number }
+  | { type: 'ROTATE_PIECE'; pieceIndex: number }
   | { type: 'RESTART' }
   | { type: 'CLEAR_ANIMATION' };
 
@@ -124,6 +127,16 @@ function reducer(state: GameState, action: Action): GameState {
       };
     }
 
+    case 'ROTATE_PIECE': {
+      const pieceToRotate = state.pieces[action.pieceIndex];
+      if (!pieceToRotate) return state;
+      const rotated = rotateShape(pieceToRotate.shape);
+      const newPieces = state.pieces.map((p, i) =>
+        i === action.pieceIndex ? { ...pieceToRotate, shape: rotated } : p
+      );
+      return { ...state, pieces: newPieces };
+    }
+
     case 'CLEAR_ANIMATION':
       return { ...state, lastClearedLines: 0, clearedRows: [], clearedCols: [], clearedCells: [], justPlacedCells: [], lastScoreGained: 0 };
 
@@ -141,16 +154,68 @@ function reducer(state: GameState, action: Action): GameState {
 // ─── GameBlock ──────────────────────────────────────────────
 
 const GameBlock: React.FC = () => {
+  const [phase, setPhase] = React.useState<'menu' | 'playing'>('menu');
   const [state, dispatch] = useReducer(reducer, undefined, () => {
     const saved = localStorage.getItem('blockPuzzleBest');
     return initState(saved ? parseInt(saved) : 0);
   });
+
+  // Stats from localStorage
+  const [stats, setStats] = React.useState(() => {
+    const raw = localStorage.getItem('blockPuzzleStats');
+    return raw ? JSON.parse(raw) : { gamesPlayed: 0, bestCombo: 0, totalLines: 0 };
+  });
+
+  const startGame = () => {
+    unlockAudio();
+    setPhase('playing');
+    dispatch({ type: 'RESTART' });
+  };
 
   const [draggingIndex, setDraggingIndex] = React.useState<number | null>(null);
   const [hoverRow, setHoverRow] = React.useState<number | null>(null);
   const [hoverCol, setHoverCol] = React.useState<number | null>(null);
   const clearTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const touchRef = useRef<{ pieceIndex: number } | null>(null);
+  const gameOverTracked = useRef(false);
+
+  // Track stats when game ends
+  useEffect(() => {
+    if (state.gameOver && !gameOverTracked.current) {
+      gameOverTracked.current = true;
+      const raw = localStorage.getItem('blockPuzzleStats');
+      const st = raw ? JSON.parse(raw) : { gamesPlayed: 0, bestCombo: 0, totalLines: 0 };
+      st.gamesPlayed += 1;
+      if (state.comboCount > st.bestCombo) st.bestCombo = state.comboCount;
+      localStorage.setItem('blockPuzzleStats', JSON.stringify(st));
+      setStats(st);
+    }
+    if (!state.gameOver) gameOverTracked.current = false;
+  }, [state.gameOver, state.comboCount]);
+
+  // Sound effects — watch state changes
+  const prevScore = useRef(state.score);
+  useEffect(() => {
+    if (state.score > prevScore.current) {
+      if (state.lastClearedLines > 0) {
+        if (state.comboCount > 1) sfxCombo(state.comboCount);
+        else sfxClear(state.lastClearedLines);
+      } else {
+        sfxPlace();
+      }
+      prevScore.current = state.score;
+    }
+  }, [state.score, state.lastClearedLines, state.comboCount]);
+
+  useEffect(() => {
+    if (state.gameOver) {
+      if (state.score >= state.bestScore && state.score > 0) {
+        sfxNewBest();
+      } else {
+        sfxGameOver();
+      }
+    }
+  }, [state.gameOver]); // eslint-disable-line
 
   // Floating score state
   const [floatingScores, setFloatingScores] = React.useState<Array<{ id: number; text: string; key: number }>>([]);
@@ -182,6 +247,7 @@ const GameBlock: React.FC = () => {
   }, [state.lastClearedLines, state.lastScoreGained, state.comboCount, state.score]);
 
   const handleDragStart = useCallback((e: React.DragEvent, index: number) => {
+    unlockAudio();
     setDraggingIndex(index);
     // Invisible ghost image
     const ghost = document.createElement('div');
@@ -214,6 +280,10 @@ const GameBlock: React.FC = () => {
   }, []);
 
   // Touch support — handlers attached at document level so they work over the grid too
+  const handleRotate = useCallback((index: number) => {
+    dispatch({ type: 'ROTATE_PIECE', pieceIndex: index });
+  }, []);
+
   const handleTouchStart = useCallback((_e: React.TouchEvent, index: number) => {
     touchRef.current = { pieceIndex: index };
     setDraggingIndex(index);
@@ -319,6 +389,7 @@ const GameBlock: React.FC = () => {
         onDragEnd={handleDragEnd}
         draggingIndex={draggingIndex}
         onTouchStart={handleTouchStart}
+        onRotate={handleRotate}
       />
 
       <p className="hint">Drag pieces onto the grid · Fill rows or columns to clear them</p>
@@ -327,8 +398,40 @@ const GameBlock: React.FC = () => {
         <GameOver
           score={state.score}
           bestScore={state.bestScore}
+          stats={stats}
           onRestart={() => dispatch({ type: 'RESTART' })}
+          onMenu={() => { setPhase('menu'); dispatch({ type: 'RESTART' }); }}
         />
+      )}
+
+      {/* Start Menu */}
+      {phase === 'menu' && (
+        <div className="menu-overlay">
+          <div className="menu-card">
+            <h1 className="menu-title">
+              <span className="title-block">BLOCK</span>
+              <span className="title-blast">BLAST</span>
+            </h1>
+            <p className="menu-sub">Drag pieces. Fill lines. Clear the grid.</p>
+            <div className="menu-stats-row">
+              {stats.gamesPlayed > 0 && (
+                <>
+                  <div className="menu-stat">
+                    <span className="menu-stat-val">{stats.gamesPlayed}</span>
+                    <span className="menu-stat-label">Games</span>
+                  </div>
+                  <div className="menu-stat">
+                    <span className="menu-stat-val">{state.bestScore.toLocaleString()}</span>
+                    <span className="menu-stat-label">Best</span>
+                  </div>
+                </>
+              )}
+            </div>
+            <button className="play-btn" onClick={startGame}>
+              PLAY
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
