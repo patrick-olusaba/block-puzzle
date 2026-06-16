@@ -3,12 +3,74 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#080818" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>Block Blast</title>
-    <script type="module" crossorigin src="/assets/index-BSOUDI0G.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-4Ps1pCLm.css">
+    <style>
+      /* Loading splash — shown before React mounts, removed by main.tsx */
+      #app-loader {
+        position: fixed;
+        inset: 0;
+        background: #080818;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        transition: opacity 0.3s ease;
+        gap: 20px;
+      }
+      #app-loader.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .loader-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+        width: 60px;
+        height: 60px;
+      }
+      .loader-cell {
+        border-radius: 6px;
+        animation: loaderPulse 1.2s ease-in-out infinite;
+      }
+      .loader-cell:nth-child(1) { background: #e84040; animation-delay: 0s; }
+      .loader-cell:nth-child(2) { background: #3b82f6; animation-delay: 0.1s; }
+      .loader-cell:nth-child(3) { background: #22c55e; animation-delay: 0.2s; }
+      .loader-cell:nth-child(4) { background: #eab308; animation-delay: 0.3s; }
+      .loader-cell:nth-child(5) { background: #a855f7; animation-delay: 0.4s; }
+      .loader-cell:nth-child(6) { background: #f97316; animation-delay: 0.15s; }
+      .loader-cell:nth-child(7) { background: #06b6d4; animation-delay: 0.25s; }
+      .loader-cell:nth-child(8) { background: #ec4899; animation-delay: 0.35s; }
+      .loader-cell:nth-child(9) { background: #7c3aed; animation-delay: 0.45s; }
+      @keyframes loaderPulse {
+        0%, 100% { transform: scale(1); opacity: 0.4; }
+        50%      { transform: scale(1.3); opacity: 1; }
+      }
+      .loader-title {
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        font-size: 20px;
+        font-weight: 900;
+        letter-spacing: 3px;
+        color: #fff;
+        opacity: 0.6;
+      }
+    </style>
+    <script type="module" crossorigin src="/assets/index-DuP3TbA6.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BscTTlld.css">
   </head>
   <body>
+    <div id="app-loader">
+      <div class="loader-grid">
+        <div class="loader-cell"></div><div class="loader-cell"></div><div class="loader-cell"></div>
+        <div class="loader-cell"></div><div class="loader-cell"></div><div class="loader-cell"></div>
+        <div class="loader-cell"></div><div class="loader-cell"></div><div class="loader-cell"></div>
+      </div>
+      <div class="loader-title">BLOCK BLAST</div>
+    </div>
     <div id="root"></div>
   </body>
 </html>
