@@ -1,25 +1,5 @@
-export type CellColor =
-  | 'empty'
-  | 'red'
-  | 'blue'
-  | 'green'
-  | 'yellow'
-  | 'purple'
-  | 'orange'
-  | 'cyan'
-  | 'pink';
-
-export interface Cell {
-  filled: boolean;
-  color: CellColor;
-}
-
-export type Grid = Cell[][];
-
-export interface BlockShape {
-  shape: boolean[][];
-  color: CellColor;
-}
+import type { Grid, ClearedCellInfo } from './grid';
+import type { BlockShape } from './block';
 
 export interface DragState {
   pieceIndex: number;
@@ -29,10 +9,11 @@ export interface DragState {
   currentRow: number | null;
 }
 
-export interface ClearedCellInfo {
-  r: number;
-  c: number;
-  color: CellColor;
+export interface ClearResult {
+  newGrid: Grid;
+  linesCleared: number;
+  clearedRows: number[];
+  clearedCols: number[];
 }
 
 export interface GameState {
